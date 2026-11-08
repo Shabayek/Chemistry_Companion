@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0b1020;
+  --bg-soft: #121a33;
+  --card: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+  --text: #e8ecff;
+  --muted: #a9b1d6;
+  --primary: #7c5cff;
+  --accent: #00d4ff;
+  --success: #3ddc97;
+  --warning: #ffcc66;
+  --danger: #ff6b6b;
+  --radius: 16px;
+}
+
+[data-theme="light"] {
+  --bg: #f4f6ff;
+  --bg-soft: #ffffff;
+  --card: rgba(255,255,255,0.7);
+  --card-border: rgba(0,0,0,0.08);
+  --text: #1a1f3a;
+  --muted: #5a6186;
+  --primary: #5b3df5;
+  --accent: #00729a; /* ≥ 4.5:1 on the light backgrounds */
+  --success: #1fa86a;
+  --warning: #c98a00;
+  --danger: #d64545;
+}
+
+[data-theme="high-contrast"] {
+  --bg: #000000;
+  --bg-soft: #000000;
+  --card: #000000;
+  --card-border: #ffffff;
+  --text: #ffffff;
+  --muted: #ffffff;
+  --primary: #ffff00;
+  --accent: #00ffff;
+  --success: #00ff00;
+  --warning: #ffff00;
+  --danger: #ff0000;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+/* Solid base colour under the gradient (also what contrast checkers and overscroll areas see). */
+html { background-color: var(--bg); }
+body {
+  margin: 0;
+  background-color: var(--bg);
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: radial-gradient(1200px 800px at 20% 0%, #1a2350 0%, var(--bg) 60%);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+[data-theme="light"] body {
+  background: radial-gradient(1200px 800px at 20% 0%, #e6eaff 0%, var(--bg) 60%);
+}
+
+/* Element defaults. In a layer so Tailwind utilities can override them. */
+@layer base {
+  input, select, textarea { background: var(--bg-soft); color: var(--text); border: 1px solid var(--card-border); border-radius: 10px; padding: 10px 12px; }
+  a { color: var(--accent); text-decoration: none; }
+  /* Links inside running text are underlined, so they are not identified by colour alone (WCAG 1.4.1). */
+  :where(p, dd, .prose) a:not(.btn) { text-decoration: underline; text-underline-offset: 2px; }
+}
+
+/* App components. Layered so utilities (e.g. md:hidden, p-3) win over them, as Tailwind intends. */
+@layer components {
+  .glass {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 8px 24px rgba(124,92,255,.35); }
+  .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--card-border); }
+  .btn-success { background: var(--success); color: #0b1020; }
+  .card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 20px; backdrop-filter: blur(12px); }
+}
+
+.focus-ring:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Visible focus for all interactive elements that do not opt into .focus-ring. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+/* In-app "Reduced motion" setting (class set on <html> by App). */
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+  animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important;
+}
+
+@layer components {
+  .text-muted { color: var(--muted); }
+  .text-gradient { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+}
+
+@layer components {
+  /* Skip link: hidden until focused with the keyboard. */
+  .skip-link {
+    position: absolute; left: 12px; top: -48px; z-index: 100;
+    padding: 8px 14px; border-radius: 10px; background: var(--primary); color: #fff; font-weight: 600;
+    transition: top .15s ease;
+  }
+  .skip-link:focus { top: 12px; outline: 2px solid var(--accent); outline-offset: 2px; }
+}
